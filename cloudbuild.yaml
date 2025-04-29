@@ -26,3 +26,8 @@ steps:
 
 images:
   - 'us-central1-docker.pkg.dev/trial-003-457615/hello-repo/hello-image:$SHORT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY  # Avoids logs_bucket error
+
+serviceAccount: 'projects/trial-003-457615/serviceAccounts/build-sa@trial-003-457615.iam.gserviceaccount.com'
