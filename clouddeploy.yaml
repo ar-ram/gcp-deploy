@@ -17,7 +17,7 @@ serialPipeline:
 apiVersion: deploy.cloud.google.com/v1
 kind: Target
 metadata:
-  name: dev
+  name: hello-pipeline-target-1
 description: Dev environment GKE
 gke:
   cluster: projects/trial-003-457615/locations/us-central1/clusters/gke-dev
@@ -26,7 +26,7 @@ gke:
 apiVersion: deploy.cloud.google.com/v1
 kind: Target
 metadata:
-  name: prod
+  name: hello-pipeline-target-2
 description: Prod environment GKE
 gke:
   cluster: projects/trial-003-457615/locations/us-central1/clusters/gke-prod
