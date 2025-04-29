@@ -1,0 +1,14 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: hello-world
+
+build:
+  artifacts:
+    - image: us-central1-docker.pkg.dev/trial-003-457615/hello-repo/hello-image
+
+deploy:
+  kubectl:
+    manifests:
+      - k8s/deployment.yaml
+      - k8s/service.yaml
