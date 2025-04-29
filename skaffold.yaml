@@ -12,3 +12,16 @@ deploy:
     manifests:
       - k8s/deployment.yaml
       - k8s/service.yaml
+
+profiles:
+  - name: dev
+    deploy:
+      kubectl:
+        manifests:
+          - k8s/dev/*.yaml
+
+  - name: prod
+    deploy:
+      kubectl:
+        manifests:
+          - k8s/prod/*.yaml
