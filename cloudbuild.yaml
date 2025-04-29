@@ -1,33 +1,40 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: [
-      'build',
-      '-t',
-      'us-central1-docker.pkg.dev/trial-003-457615/hello-repo/hello-image:$SHORT_SHA',
-      '.'
-    ]
+    args:
+      [
+        'build',
+        '-t',
+        'us-central1-docker.pkg.dev/trial-003-457615/hello-repo/hello-image:$SHORT_SHA',
+        '.'
+      ]
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: [
-      'push',
-      'us-central1-docker.pkg.dev/trial-003-457615/hello-repo/hello-image:$SHORT_SHA'
-    ]
+    args:
+      [
+        'push',
+        'us-central1-docker.pkg.dev/trial-003-457615/hello-repo/hello-image:$SHORT_SHA'
+      ]
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: [
-      'deploy',
-      'releases',
-      'create',
-      'hello-release-$SHORT_SHA',
-      '--delivery-pipeline=hello-pipeline',
-      '--region=us-central1',
-      '--images=hello-image=us-central1-docker.pkg.dev/trial-003-457615/hello-repo/hello-image:$SHORT_SHA'
-    ]
+    args:
+      [
+        'deploy',
+        'releases',
+        'create',
+        'hello-release-$SHORT_SHA',
+        '--delivery-pipeline=hello-pipeline',
+        '--region=us-central1',
+        '--images=hello-image=us-central1-docker.pkg.dev/trial-003-457615/hello-repo/hello-image:$SHORT_SHA'
+      ]
+    dir: '.'  # directory with skaffold.yaml
+    env:
+      - 'CLOUDSDK_CORE_PROJECT=trial-003-457615'
+      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
 
 images:
   - 'us-central1-docker.pkg.dev/trial-003-457615/hello-repo/hello-image:$SHORT_SHA'
 
 options:
-  logging: CLOUD_LOGGING_ONLY  # Avoids logs_bucket error
+  logging: CLOUD_LOGGING_ONLY  # Avoids needing logs_bucket
 
-serviceAccount: 'projects/trial-003-457615/serviceAccounts/build-sa@trial-003-457615.iam.gserviceaccount.com'
+serviceAccount: 'build-sa@trial-003-457615.iam.gserviceaccount.com'
