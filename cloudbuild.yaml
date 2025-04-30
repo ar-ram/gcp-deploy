@@ -32,11 +32,6 @@
 
 
 
-
-
-options:
-  logging: CLOUD_LOGGING_ONLY
-
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image', '.']
@@ -44,19 +39,27 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image']
 
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        echo "Fetching latest digest..."
         DIGEST=$(gcloud artifacts docker images list us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image \
           --sort-by=~UPDATE_TIME \
-          --limit=1 \
-          --format="value(digest)")
-        IMAGE="us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image@${$DIGEST}"
-        echo "Using image: $IMAGE"
-        gcloud deploy releases create hello-release-$(date +%s) \
+          --format='value(digest)' | head -n1)
+        IMAGE="us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image@${DIGEST}"
+        RELEASE="hello-release-$(date +%s)"
+        gcloud deploy releases create "$RELEASE" \
           --delivery-pipeline=hello-pipeline \
           --region=us-central1 \
           --images=hello-image=$IMAGE
+    env:
+      - 'CLOUDSDK_CORE_PROJECT=deploy-458404'
+      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
+
+images:
+  - 'us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
