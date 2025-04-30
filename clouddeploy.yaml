@@ -1,0 +1,29 @@
+apiVersion: deploy.cloud.google.com/v1
+kind: DeliveryPipeline
+metadata:
+  name: hello-pipeline
+description: Deploys Hello World app
+serialPipeline:
+  stages:
+    - targetId: dev
+      profiles: []
+    - targetId: prod
+      profiles: []
+---
+
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: dev
+description: Development environment
+gke:
+  cluster: projects/deploy-458404/locations/us-central1/clusters/hello-dev
+---
+
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: prod
+description: Production environment
+gke:
+  cluster: projects/deploy-458404/locations/us-central1/clusters/hello-prod
