@@ -44,9 +44,8 @@ steps:
     args:
       - '-c'
       - |
-        DIGEST=$(gcloud artifacts docker images list us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image \
-          --sort-by=~UPDATE_TIME \
-          --format='value(digest)' | head -n1)
+        # Hardcoded Digest (replace this with the correct digest)
+        DIGEST="sha256:6b1693f99ef2c7a9f810f6b54083ccf8c3f2554f266e5147d5ea3ec280d23213"
         IMAGE="us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image@${DIGEST}"
         RELEASE="hello-release-$(date +%s)"
         gcloud deploy releases create "$RELEASE" \
@@ -62,4 +61,3 @@ images:
 
 options:
   logging: CLOUD_LOGGING_ONLY
-
