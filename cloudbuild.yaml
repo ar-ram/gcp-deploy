@@ -30,6 +30,13 @@
 # options:
 #   logging: CLOUD_LOGGING_ONLY
 
+
+
+
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image', '.']
@@ -43,10 +50,11 @@ steps:
       - '-c'
       - |
         DIGEST=$(gcloud artifacts docker images list us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image \
-          --sort-by=UPDATE_TIME \
-          --format="value(digest)" \
-          | head -n1)
-        IMAGE="us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image@$DIGEST"
+          --sort-by=~UPDATE_TIME \
+          --limit=1 \
+          --format="value(digest)")
+        IMAGE="us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image@${DIGEST}"
+        echo "Using image: $IMAGE"
         gcloud deploy releases create hello-release-$(date +%s) \
           --delivery-pipeline=hello-pipeline \
           --region=us-central1 \
