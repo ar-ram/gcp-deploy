@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: hello
-          image: IMAGE_PLACEHOLDER
+          image: us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image
           ports:
             - containerPort: 8080
