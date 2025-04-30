@@ -21,7 +21,7 @@ steps:
     ]
     dir: '.'
     env:
-      - 'CLOUDSDK_CORE_PROJECT=PROJECT_ID'
+      - 'CLOUDSDK_CORE_PROJECT=deploy-458404'
       - 'CLOUDSDK_COMPUTE_REGION=us-central1'
 
 images:
