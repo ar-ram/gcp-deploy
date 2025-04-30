@@ -1,31 +1,53 @@
+# steps:
+#   - name: 'gcr.io/cloud-builders/docker'
+#     args: [
+#       'build', '-t',
+#       'us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image:$SHORT_SHA',
+#       '.'
+#     ]
+
+#   - name: 'gcr.io/cloud-builders/docker'
+#     args: [
+#       'push',
+#       'us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image:$SHORT_SHA'
+#     ]
+
+#   - name: 'gcr.io/cloud-builders/gcloud'
+#     args: [
+#       'deploy', 'releases', 'create', 'hello-release-$SHORT_SHA',
+#       '--delivery-pipeline=hello-pipeline',
+#       '--region=us-central1',
+#       '--images=hello-image=us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image:$SHORT_SHA'
+#     ]
+#     dir: '.'
+#     env:
+#       - 'CLOUDSDK_CORE_PROJECT=deploy-458404'
+#       - 'CLOUDSDK_COMPUTE_REGION=us-central1'
+
+# images:
+#   - 'us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image:$SHORT_SHA'
+
+# options:
+#   logging: CLOUD_LOGGING_ONLY
+
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: [
-      'build', '-t',
-      'us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image:$SHORT_SHA',
-      '.'
-    ]
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image', '.']
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: [
-      'push',
-      'us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image:$SHORT_SHA'
-    ]
+    args: ['push', 'us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image']
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: [
-      'deploy', 'releases', 'create', 'hello-release-$SHORT_SHA',
-      '--delivery-pipeline=hello-pipeline',
-      '--region=us-central1',
-      '--images=hello-image=us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image:$SHORT_SHA'
-    ]
-    dir: '.'
-    env:
-      - 'CLOUDSDK_CORE_PROJECT=deploy-458404'
-      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
-
-images:
-  - 'us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image:$SHORT_SHA'
-
-options:
-  logging: CLOUD_LOGGING_ONLY
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        DIGEST=$(gcloud artifacts docker images list us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image \
+          --sort-by=UPDATE_TIME \
+          --format="value(digest)" \
+          | head -n1)
+        IMAGE="us-central1-docker.pkg.dev/deploy-458404/hello-repo/hello-image@$DIGEST"
+        gcloud deploy releases create hello-release-$(date +%s) \
+          --delivery-pipeline=hello-pipeline \
+          --region=us-central1 \
+          --images=hello-image=$IMAGE
